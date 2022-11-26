@@ -44,12 +44,24 @@ public class DockingController : MonoBehaviour
             case "DockingPort":
                 if(dockingMode)
                 {
+                    Debug.Log(other.transform.localPosition);
+                    Debug.Log(dockingPorts[activeDockingPort].transform.localPosition);
                     body.isKinematic = true;
+
+                    float absOffset = Mathf.Abs(other.transform.localPosition.magnitude) + Mathf.Abs(dockingPorts[activeDockingPort].transform.localPosition.magnitude);
+
+                    Vector3 offsetDir = other.transform.localPosition.normalized;
+
+                    Vector3 newPosition = absOffset * offsetDir;
+                    
                     Debug.Log(other.GetComponent<DockingPort>().getID());
+                    //Time.timeScale = 0;
                     other.GetComponent<DockingPort>().setAvailable(false);
-                    Vector3 newPosition = other.transform.localPosition + dockingPorts[activeDockingPort].transform.localPosition;
+                    
+                    Destroy(body);
                     transform.parent = other.transform.parent;
                     transform.localPosition = newPosition;
+
                 }
                 break;
         }
