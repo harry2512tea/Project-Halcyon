@@ -8,6 +8,7 @@ public class DockingPort : MonoBehaviour
     GameObject ThisShip;
     public int portID = -1;
     bool available = true;
+    public DoorController attachedDoor;
     private void Awake()
     {
         ThisShip = transform.parent.gameObject;
