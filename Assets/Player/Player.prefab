@@ -129,8 +129,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e60d8740b57f194c83fab54a3e9f34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grounded: 0
+  magBoots: 0
+  ignore:
+    serializedVersion: 2
+    m_Bits: 0
   sensitivity: 10
-  rollThrust: 5
+  rollThrust: 0.2
+  Thrust: 0.5
+  movementSpeed: 2
+  cam: {fileID: 8274051110903665508}
 --- !u!1 &8274051110903665508
 GameObject:
   m_ObjectHideFlags: 0

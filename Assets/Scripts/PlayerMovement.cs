@@ -143,7 +143,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Mag()
     {
-
+        
     }
     void Grav()
     {
