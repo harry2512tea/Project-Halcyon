@@ -411,6 +411,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portID: -1
+  docked: {fileID: 0}
   attachedDoor: {fileID: 6867320706405497179}
 --- !u!1 &2486272262095879528
 GameObject:
@@ -858,6 +859,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   portID: -1
+  docked: {fileID: 0}
   attachedDoor: {fileID: 7271113011685281348}
 --- !u!1 &5641825671744107296
 GameObject:
@@ -1605,7 +1607,7 @@ Transform:
   m_GameObject: {fileID: 8722625974270946049}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1561513514128577205}
@@ -1647,6 +1649,7 @@ MonoBehaviour:
   dockingPorts: []
   portControllers: []
   activeDockingPort: 0
+  mass: 100
 --- !u!1001 &5275402433332507529
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1782,10 +1785,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6085545637689411662, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 3456838154627017232}
+    - target: {fileID: 6085545637689411662, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: connectedPort
+      value: 
+      objectReference: {fileID: 2119590798555863598}
     - target: {fileID: 6547742255541304517, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7206222843558042780, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 3456838154627017232}
+    - target: {fileID: 7206222843558042780, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: connectedPort
+      value: 
+      objectReference: {fileID: 2119590798555863598}
     - target: {fileID: 7291305928537789947, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -1943,9 +1962,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6085545637689411662, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 3456838154627017232}
+    - target: {fileID: 6085545637689411662, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: connectedPort
+      value: 
+      objectReference: {fileID: 2000564957381691651}
     - target: {fileID: 6547742255541304517, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
       propertyPath: m_Mesh
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7206222843558042780, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 3456838154627017232}
+    - target: {fileID: 7206222843558042780, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: connectedPort
+      value: 
+      objectReference: {fileID: 2000564957381691651}
+    - target: {fileID: 7589594411778007931, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8064663012819512081, guid: 28466104b2fb9ad4fa7e11f92d93c191, type: 3}
       propertyPath: m_LocalPosition.z

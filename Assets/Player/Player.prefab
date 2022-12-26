@@ -14,9 +14,10 @@ GameObject:
   - component: {fileID: 6737556908354542766}
   - component: {fileID: 7498963492990138332}
   - component: {fileID: 150617246388193323}
+  - component: {fileID: 2130623481895303511}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -134,11 +135,32 @@ MonoBehaviour:
   ignore:
     serializedVersion: 2
     m_Bits: 0
-  sensitivity: 10
+  Xsensitivity: 5
+  Ysensitivity: 5
   rollThrust: 0.2
-  Thrust: 0.5
-  movementSpeed: 2
+  Thrust: 2
+  walkSpeed: 10
+  runSpeed: 20
+  jumpForce: 5
+  stabilisationForce: 0.5
   cam: {fileID: 8274051110903665508}
+--- !u!114 &2130623481895303511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143136659822542185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f05a257caf34d43ba7617b56e017a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 6661495966909056592}
+  range: 1
+  ignore:
+    serializedVersion: 2
+    m_Bits: 191
 --- !u!1 &8274051110903665508
 GameObject:
   m_ObjectHideFlags: 0

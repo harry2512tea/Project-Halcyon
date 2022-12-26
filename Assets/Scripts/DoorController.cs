@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoorController : Interactable
+public class DoorController : MonoBehaviour
 {
     public bool open = false;
     GameObject attachedRoom1, attachedRoom2;
 
-    DoorController linkedDoor;
+    public DoorController linkedDoor;
     bool linked = false;
     public GameObject leftDoor, rightDoor;
     public Vector3 leftOpenPosition, leftClosedPosition, rightOpenPosition, rightClosedPosition;
@@ -43,20 +43,46 @@ public class DoorController : Interactable
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if(linked && other.tag == "Player" && !open)
+        {
+            Open();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (linked && other.tag == "Player" && open)
+        {
+            Close();
+        }
+    }
+
     private void FixedUpdate()
     {
-        if (linked)
-        {
-            linkedDoor.open = open;
-        }
     }
 
     public void Open()
     {
+        if(linked)
+        {
+            if(linkedDoor.open == false)
+            {
+                linkedDoor.open = true;
+            }
+        }
         open = true;
     }
     public void Close()
     {
+        if (linked)
+        {
+            if (linkedDoor.open == true)
+            {
+                linkedDoor.open = false;
+            }
+        }
         open = false;
     }
     public void Dock(DoorController door)
@@ -69,9 +95,10 @@ public class DoorController : Interactable
     {
         linked = false;
         linkedDoor = null;
+        open = false;
     }
 
-    public override void Interact()
+    public void Interact()
     {
         
         if(open)

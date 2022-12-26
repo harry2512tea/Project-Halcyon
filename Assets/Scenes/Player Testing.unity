@@ -1912,8 +1912,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 150617246388193323, guid: c2631e57ac0894641afcf3ee34851ad2, type: 3}
+      propertyPath: runSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 150617246388193323, guid: c2631e57ac0894641afcf3ee34851ad2, type: 3}
       propertyPath: jumpForce
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 150617246388193323, guid: c2631e57ac0894641afcf3ee34851ad2, type: 3}
+      propertyPath: walkSpeed
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 150617246388193323, guid: c2631e57ac0894641afcf3ee34851ad2, type: 3}
       propertyPath: rollThrust

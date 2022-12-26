@@ -8,16 +8,12 @@ public class DockingPort : MonoBehaviour
     GameObject ThisShip;
     public int portID = -1;
     bool available = true;
+    public bool isChild = false;
+    public GameObject docked, stationComponent;
     public DoorController attachedDoor;
     private void Awake()
     {
         ThisShip = transform.parent.gameObject;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public int getID() { return portID; }
