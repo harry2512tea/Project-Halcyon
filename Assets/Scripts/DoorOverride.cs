@@ -8,7 +8,7 @@ public class DoorOverride : Interactable
 
     DoorController controller;
 
-    public override void Interact()
+    public override void Interact(GameObject player)
     {
         controller.Interact();
     }

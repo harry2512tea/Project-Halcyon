@@ -21,7 +21,7 @@ public class InteractionManager : MonoBehaviour
         RaycastHit hit = interactionDetection();
         if (Input.GetKeyDown(KeyCode.F) && detected)
         {
-            hit.collider.gameObject.GetComponent<Interactable>().Interact();
+            hit.collider.gameObject.GetComponent<Interactable>().Interact(gameObject);
         }
     }
 

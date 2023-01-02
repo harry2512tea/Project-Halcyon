@@ -11,8 +11,11 @@ public class DockingPort : MonoBehaviour
     public bool isChild = false;
     public GameObject docked, stationComponent;
     public DoorController attachedDoor;
+    public Vector3 alignmentVector;
+    public Camera portCam;
     private void Awake()
     {
+        portCam.enabled = false;
         ThisShip = transform.parent.gameObject;
     }
 

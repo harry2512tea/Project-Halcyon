@@ -6,7 +6,8 @@ public enum movementType
 {
     ZeroG,
     Grav,
-    mag
+    mag,
+    controlling
 }
 
 public class PlayerController : MonoBehaviour
@@ -14,10 +15,11 @@ public class PlayerController : MonoBehaviour
     movementType moveType = movementType.ZeroG;
     Vector3 rotationSpeed;
     Vector3 movement;
-    Vector3 camRot;
+    Vector3 playerScale;
     Rigidbody body;
     public bool grounded;
     public bool magBoots = false;
+    public bool controlling = false;
     public LayerMask ignore;
     CapsuleCollider col;
     Vector3 prevUp;
@@ -29,18 +31,30 @@ public class PlayerController : MonoBehaviour
     float rotX, rotY, totalRotY;
     void Start()
     {
-        //cam = Camera.main.gameObject;
         body = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
         Cursor.lockState = CursorLockMode.Locked;
+        playerScale = new Vector3(1.0f, 1.0f, 1.0f);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(controlling)
+        {
+            moveType = movementType.controlling;
+        }
+        else
+        {
+            moveType = movementType.ZeroG;
+            DoMovement();
+            if(!cam.activeSelf)
+            {
+                cam.SetActive(true);
+            }
+        }
+
         
-        //transform.localScale = new Vector3(1.0f, 0.5f, 1.0f);
-        DoMovement();
         if (Input.GetKeyDown(KeyCode.M))
         {
             if (!magBoots)
@@ -56,7 +70,6 @@ public class PlayerController : MonoBehaviour
         switch (moveType)
         {
             case movementType.ZeroG:
-                
                 if (grounded && magBoots)
                 {
                     Mag();
@@ -65,13 +78,22 @@ public class PlayerController : MonoBehaviour
                 {
                     zeroG();
                 }
-
                 break;
+
             case movementType.Grav:
                 Grav();
                 break;
+
             case movementType.mag:
                 Mag();
+                break;
+
+            case movementType.controlling:
+                cam.transform.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+                if(cam.activeSelf)
+                {
+                    cam.SetActive(false);
+                }
                 break;
         }
         
@@ -109,7 +131,16 @@ public class PlayerController : MonoBehaviour
 
     void zeroG()
     {
-        transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        if(transform.parent)
+        {
+            transform.parent = null;
+            transform.localScale = playerScale;
+        }
+        if(prevUp != new Vector3(0.0f, 0.0f))
+        {
+            prevUp = new Vector3(0.0f, 0.0f);
+        }
+
         body.drag = 0.0f;
         cam.transform.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
         body.constraints = RigidbodyConstraints.None;
@@ -122,8 +153,6 @@ public class PlayerController : MonoBehaviour
             Stabilise();
         }
     }
-
-    
 
     void Grav()
     {
@@ -142,28 +171,33 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit = magGrounded();
         if (grounded)
         {
-            transform.parent = hit.collider.transform;
-            body.drag = 5.0f;
-            rotationSpeed = new Vector3(0.0f, 0.0f, 0.0f);
-            
-            body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             Vector3 up = hit.normal;
-
             DoRotation();
-            if (up != prevUp)
+            if (transform.parent != hit.collider.transform)
             {
-                cam.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
-                transform.localRotation = Quaternion.FromToRotation(Vector3.up, up);
-                transform.RotateAround(transform.position, up, totalRotY);
-                prevUp = up;
-            }
+                transform.parent = hit.collider.transform;
+                Vector3 floorScale = transform.parent.lossyScale;
+                transform.localScale = new Vector3(playerScale.x / floorScale.x, playerScale.y / floorScale.y, playerScale.z / floorScale.z);
+                body.drag = 5.0f;
+                rotationSpeed = new Vector3(0.0f, 0.0f, 0.0f);
 
+                body.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
+                
+                if (up != prevUp)
+                {
+                    float Y = transform.localEulerAngles.y;
+                    Debug.Log("setting rotation");
+                    cam.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+                    transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
+                    transform.RotateAround(transform.position, up, Y);
+                    prevUp = up;
+                }
+            }
             transform.RotateAround(transform.position, up, rotY);
             totalRotY += rotY;
             rotX = Mathf.Clamp(rotX, -80f, 80f);
             cam.transform.localEulerAngles = new Vector3(rotX, 0.0f, 0.0f);
-
-
 
             DoMovement();
             if(!Input.GetKey(KeyCode.LeftShift))
@@ -180,7 +214,7 @@ public class PlayerController : MonoBehaviour
                 transform.parent = null;
                 body.drag = 0.0f;
                 body.AddForce(new Vector3(0.0f, Input.GetAxis("UpDown") * jumpForce, 0.0f));
-                transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+                transform.localScale = playerScale;
             }
         }
         else
@@ -193,7 +227,7 @@ public class PlayerController : MonoBehaviour
     RaycastHit magGrounded()
     {
         RaycastHit hit;
-        if (Physics.SphereCast(transform.position, col.radius, transform.TransformDirection(Vector3.down), out hit, (col.height / 2) + 0.05f, ~ignore))
+        if (Physics.SphereCast(transform.position, col.radius, transform.TransformDirection(Vector3.down), out hit, 1.001f, ~ignore))
         {
             grounded = true;
         }
@@ -221,5 +255,22 @@ public class PlayerController : MonoBehaviour
         rotationSpeed.x = Mathf.MoveTowards(rotationSpeed.x, 0f, stabilisationForce);
         rotationSpeed.y = Mathf.MoveTowards(rotationSpeed.y, 0f, stabilisationForce);
         rotationSpeed.z = Mathf.MoveTowards(rotationSpeed.z, 0f, stabilisationForce);
+    }
+
+    public void addRigidBody()
+    {
+        if(!body)
+        {
+            body = gameObject.AddComponent<Rigidbody>();
+            body.useGravity = false;
+        }
+    }
+
+    public void deleteRigidBody()
+    {
+        if (body)
+        {
+            Destroy(body);
+        }
     }
 }

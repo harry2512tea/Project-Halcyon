@@ -132,9 +132,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grounded: 0
   magBoots: 0
+  controlling: 0
   ignore:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 768
   Xsensitivity: 5
   Ysensitivity: 5
   rollThrust: 0.2
@@ -160,7 +161,7 @@ MonoBehaviour:
   range: 1
   ignore:
     serializedVersion: 2
-    m_Bits: 191
+    m_Bits: 959
 --- !u!1 &8274051110903665508
 GameObject:
   m_ObjectHideFlags: 0
