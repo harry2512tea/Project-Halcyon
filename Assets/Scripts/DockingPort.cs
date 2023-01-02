@@ -11,7 +11,7 @@ public class DockingPort : MonoBehaviour
     public bool isChild = false;
     public GameObject docked, stationComponent;
     public DoorController attachedDoor;
-    public Vector3 alignmentVector;
+    public Vector3 alignmentVector, portAxis;
     public Camera portCam;
     private void Awake()
     {

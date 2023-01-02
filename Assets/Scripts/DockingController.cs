@@ -10,7 +10,7 @@ public class DockingController : MonoBehaviour
     public DockingPanel panel;
     public int activeDockingPort;
     public float mass;
-    bool canDock = true;
+    public bool canDock = true;
     public bool docked;
     Rigidbody body;
     DockingPort port;
@@ -21,6 +21,10 @@ public class DockingController : MonoBehaviour
     void Awake()
     {
         body = GetComponent<Rigidbody>();
+        if(dockingMode)
+        {
+            body.AddForce(transform.TransformDirection(Vector3.right) * 10, ForceMode.Impulse);
+        }
         int ID = 0;
         foreach (Transform child in transform)
         {
@@ -45,14 +49,26 @@ public class DockingController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(gameObject.name + " " + transform.eulerAngles);
+        Debug.Log("Enter Trigger");
         switch (other.tag)
         {
             case "DockingPort":
                 if(dockingMode && canDock)
                 {
+                    Debug.Log("checking angles");
+                    
                     Transform obj = other.transform.parent.parent;
-                    if(transform.eulerAngles.x == obj.eulerAngles.x && transform.eulerAngles.z == obj.eulerAngles.z)
+                    if ((transform.eulerAngles.x <= 360 - obj.eulerAngles.x + 2 &&
+                        transform.eulerAngles.x >= 360 - obj.eulerAngles.x - 2 &&
+                        transform.eulerAngles.z <= 360 - obj.eulerAngles.z + 2 &&
+                        transform.eulerAngles.z >= 360 - obj.eulerAngles.z - 2) || (
+                        transform.eulerAngles.x <= obj.eulerAngles.x + 2 &&
+                        transform.eulerAngles.x >= obj.eulerAngles.x - 2 &&
+                        transform.eulerAngles.z <= obj.eulerAngles.z + 2 &&
+                        transform.eulerAngles.z >= obj.eulerAngles.z - 2))
                     {
+                        Debug.Log("angles valid");
                         dock(other);
                     }
                 }
@@ -69,10 +85,10 @@ public class DockingController : MonoBehaviour
                 {
                     
                     Transform obj = other.transform.parent.parent;
-                    if (transform.eulerAngles.x <= obj.eulerAngles.x + 2 &&
-                        transform.eulerAngles.x >= obj.eulerAngles.x - 2 &&
-                        transform.eulerAngles.z <= obj.eulerAngles.z + 2 &&
-                        transform.eulerAngles.z >= obj.eulerAngles.z -2)
+                    if (transform.eulerAngles.x <= 360 - obj.eulerAngles.x + 2 &&
+                        transform.eulerAngles.x >= 360 - obj.eulerAngles.x - 2 &&
+                        transform.eulerAngles.z <= 360 - obj.eulerAngles.z + 2 &&
+                        transform.eulerAngles.z >= 360 - obj.eulerAngles.z -2)
                     {
                         dock(other);
                     }
@@ -99,9 +115,8 @@ public class DockingController : MonoBehaviour
         if(dockingMode && !docked)
         {
             doMovement();
-            if(Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R))
             {
-                
                 Camera prevCam = portControllers[activeDockingPort].portCam;
                 activeDockingPort++;
                 
@@ -114,7 +129,8 @@ public class DockingController : MonoBehaviour
             }
         }
 
-        transform.Rotate(rotationSpeed * Time.deltaTime);
+        transform.Rotate(rotationSpeed * Time.deltaTime, Space.World);
+        
     }
 
     void doMovement()
@@ -124,7 +140,7 @@ public class DockingController : MonoBehaviour
         body.drag = 0.0f;
         body.constraints = RigidbodyConstraints.None;
         body.AddForce(portControllers[activeDockingPort].portCam.transform.TransformDirection(movement) * RCSThrust * Time.deltaTime, ForceMode.VelocityChange);
-        rotationSpeed += portControllers[activeDockingPort].portCam.transform.TransformVector(DoRotation());
+        rotationSpeed += (portControllers[activeDockingPort].portCam.transform.TransformVector(DoRotation()));
         
 
         if (Input.GetButton("Stabilise"))
@@ -158,9 +174,10 @@ public class DockingController : MonoBehaviour
 
     void dock(Collider other)
     {
+        Debug.Log("Docking");
         canDock = false;
         body.isKinematic = true;
-
+        rotationSpeed = new Vector3(0.0f, 0.0f, 0.0f);
         float absOffset = Mathf.Abs(other.transform.localPosition.magnitude) + Mathf.Abs(dockingPorts[activeDockingPort].transform.localPosition.magnitude);
 
         Vector3 offsetDir = other.transform.localPosition.normalized;
@@ -182,9 +199,9 @@ public class DockingController : MonoBehaviour
         portControllers[activeDockingPort].stationComponent = other.gameObject.transform.parent.parent.gameObject;
         portControllers[activeDockingPort].isChild = true;
         port.docked = dockingPorts[activeDockingPort];
-        Vector3 axis = portControllers[activeDockingPort].alignmentVector;
         Vector3 dir = other.transform.TransformDirection(port.alignmentVector);
-        transform.rotation = Quaternion.FromToRotation(axis, dir);
+        Quaternion newRot = Quaternion.FromToRotation(portControllers[activeDockingPort].portAxis, dir);
+        transform.rotation = newRot;
         transform.localEulerAngles = new Vector3(0.0f, transform.localEulerAngles.y, 0.0f);
     }
     public void Undock(int ID)
