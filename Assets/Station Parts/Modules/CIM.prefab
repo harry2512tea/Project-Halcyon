@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 633606019896948746}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.7333335}
+  m_LocalPosition: {x: 0, y: 0, z: -1.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -849,7 +849,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1255436581209777379}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
   m_LocalPosition: {x: 7, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -894,7 +894,7 @@ MonoBehaviour:
   portID: -1
   isChild: 0
   docked: {fileID: 0}
-  stationComponent: {fileID: 0}
+  stationComponent: {fileID: 8722625974270946049}
   attachedDoor: {fileID: 6867320706405497179}
   alignmentVector: {x: -1, y: 0, z: 0}
   portAxis: {x: 1, y: 0, z: 0}
@@ -1821,7 +1821,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4586935129146546583}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.20000002, z: 0.2666667}
+  m_LocalPosition: {x: 0, y: -0.20000002, z: 0.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1904,7 +1904,7 @@ MonoBehaviour:
   portID: -1
   isChild: 0
   docked: {fileID: 0}
-  stationComponent: {fileID: 0}
+  stationComponent: {fileID: 8722625974270946049}
   attachedDoor: {fileID: 7271113011685281348}
   alignmentVector: {x: 1, y: 0, z: 0}
   portAxis: {x: -1, y: 0, z: 0}

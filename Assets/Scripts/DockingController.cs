@@ -20,6 +20,7 @@ public class DockingController : MonoBehaviour
 
     void Awake()
     {
+        //Debug.Log(Vector3.Angle(Vector3.up, Vector3.down));
         body = GetComponent<Rigidbody>();
         if(dockingMode)
         {
@@ -44,33 +45,44 @@ public class DockingController : MonoBehaviour
             }
         }
 
-        activeDockingPort = 0;
+        //activeDockingPort = 0;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(gameObject.name + " " + transform.eulerAngles);
-        Debug.Log("Enter Trigger");
+        //Debug.Log(gameObject.name + " " + transform.eulerAngles);
+        //Debug.Log("Enter Trigger");
         switch (other.tag)
         {
             case "DockingPort":
                 if(dockingMode && canDock)
                 {
-                    Debug.Log("checking angles");
                     
-                    Transform obj = other.transform.parent.parent;
-                    if ((transform.eulerAngles.x <= 360 - obj.eulerAngles.x + 2 &&
-                        transform.eulerAngles.x >= 360 - obj.eulerAngles.x - 2 &&
-                        transform.eulerAngles.z <= 360 - obj.eulerAngles.z + 2 &&
-                        transform.eulerAngles.z >= 360 - obj.eulerAngles.z - 2) || (
-                        transform.eulerAngles.x <= obj.eulerAngles.x + 2 &&
-                        transform.eulerAngles.x >= obj.eulerAngles.x - 2 &&
-                        transform.eulerAngles.z <= obj.eulerAngles.z + 2 &&
-                        transform.eulerAngles.z >= obj.eulerAngles.z - 2))
+                    DockingPort port = other.gameObject.GetComponent<DockingPort>();
+                    //Debug.Log("checking angles");
+
+                    float pitchYaw = Vector3.Angle(transform.TransformDirection(portControllers[activeDockingPort].portAxis), other.transform.TransformDirection(port.alignmentVector));
+                    float roll = Vector3.SignedAngle(other.transform.TransformDirection(Vector3.up), portControllers[activeDockingPort].transform.TransformDirection(Vector3.up), other.transform.TransformDirection(port.portAxis));
+                    //Debug.Log("PitchYaw: " + pitchYaw);
+                    //Debug.Log("Roll: " + roll);
+                    if(roll < 2 && pitchYaw < 2)
                     {
-                        Debug.Log("angles valid");
+                        Debug.Log("Modules Aligned");
                         dock(other);
                     }
+                    //Transform obj = other.transform.parent.parent;
+                    //if ((transform.eulerAngles.x <= 360 - obj.eulerAngles.x + 2 &&
+                    //    transform.eulerAngles.x >= 360 - obj.eulerAngles.x - 2 &&
+                    //    transform.eulerAngles.z <= 360 - obj.eulerAngles.z + 2 &&
+                    //    transform.eulerAngles.z >= 360 - obj.eulerAngles.z - 2) || (
+                    //    transform.eulerAngles.x <= obj.eulerAngles.x + 2 &&
+                    //    transform.eulerAngles.x >= obj.eulerAngles.x - 2 &&
+                    //    transform.eulerAngles.z <= obj.eulerAngles.z + 2 &&
+                    //    transform.eulerAngles.z >= obj.eulerAngles.z - 2))
+                    //{
+                    //    Debug.Log("angles valid");
+                    //    dock(other);
+                    //}
                 }
                 break;
         }
@@ -83,13 +95,16 @@ public class DockingController : MonoBehaviour
             case "DockingPort":
                 if (dockingMode && canDock)
                 {
-                    
-                    Transform obj = other.transform.parent.parent;
-                    if (transform.eulerAngles.x <= 360 - obj.eulerAngles.x + 2 &&
-                        transform.eulerAngles.x >= 360 - obj.eulerAngles.x - 2 &&
-                        transform.eulerAngles.z <= 360 - obj.eulerAngles.z + 2 &&
-                        transform.eulerAngles.z >= 360 - obj.eulerAngles.z -2)
+                    DockingPort port = other.gameObject.GetComponent<DockingPort>();
+                    //Debug.Log("checking angles");
+
+                    float pitchYaw = Vector3.Angle(transform.TransformDirection(portControllers[activeDockingPort].portAxis), other.transform.TransformDirection(port.alignmentVector));
+                    float roll = Vector3.SignedAngle(other.transform.TransformDirection(Vector3.up), portControllers[activeDockingPort].transform.TransformDirection(Vector3.up), other.transform.TransformDirection(port.portAxis));
+                    //Debug.Log("PitchYaw: " + pitchYaw);
+                    //Debug.Log("Roll: " + roll);
+                    if (roll < 2 && pitchYaw < 2)
                     {
+                        Debug.Log("Modules Aligned");
                         dock(other);
                     }
                 }
@@ -200,7 +215,7 @@ public class DockingController : MonoBehaviour
         portControllers[activeDockingPort].isChild = true;
         port.docked = dockingPorts[activeDockingPort];
         Vector3 dir = other.transform.TransformDirection(port.alignmentVector);
-        Quaternion newRot = Quaternion.FromToRotation(portControllers[activeDockingPort].portAxis, dir);
+        Quaternion newRot = Quaternion.FromToRotation(portControllers[activeDockingPort].alignmentVector, dir);
         transform.rotation = newRot;
         transform.localEulerAngles = new Vector3(0.0f, transform.localEulerAngles.y, 0.0f);
     }

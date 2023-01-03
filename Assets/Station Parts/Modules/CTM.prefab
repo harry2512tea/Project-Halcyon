@@ -437,6 +437,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1287349263832622627}
+  - component: {fileID: 7212498656175743896}
   m_Layer: 0
   m_Name: CTM
   m_TagString: Untagged
@@ -465,6 +466,31 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7212498656175743896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1187352511797719475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7899dbf68f1dde43a8602c1640d256c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dockingMode: 0
+  dockingPorts: []
+  portControllers: []
+  panel: {fileID: 9147261478949482146}
+  activeDockingPort: 0
+  mass: 100
+  canDock: 1
+  docked: 0
+  Xsensitivity: 0
+  Ysensitivity: 0
+  rollThrust: 0
+  RCSThrust: 0
+  stabilisationForce: 0
 --- !u!1 &1281127907327410981
 GameObject:
   m_ObjectHideFlags: 0
@@ -4793,3 +4819,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 878115202640302588, guid: 64996ca3d2cf05240b17e5f56b491d57, type: 3}
   m_PrefabInstance: {fileID: 8129137217468156954}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9147261478949482146 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1018348855038386872, guid: 64996ca3d2cf05240b17e5f56b491d57, type: 3}
+  m_PrefabInstance: {fileID: 8129137217468156954}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d56310ece744aa14986d4ccb3f3d0c3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
