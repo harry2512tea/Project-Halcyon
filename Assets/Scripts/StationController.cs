@@ -5,19 +5,43 @@ using UnityEngine;
 public class StationController : MonoBehaviour
 {
     List<compartmentController> compartments;
+    List<GameObject> modules;
 
-    float totalAir;
-    private void Update()
+    float totalStoredAir;
+    float totalPowerGen, totalPowerCons, totalPowerStored;
+
+    private void Awake()
     {
-        totalAir = 0;
+        modules.Add(gameObject);
+        compartments.Add(GetComponent<compartmentController>());
+    }
+
+    private void FixedUpdate()
+    {
+        totalStoredAir = 0;
+        totalPowerStored = 0;
+        totalPowerGen = 0;
+        totalPowerCons = 0;
         foreach (compartmentController comp in compartments)
         {
-            totalAir += comp.GetComponent<AtmospherController>().airInRoom;
+            totalStoredAir += comp.storedAir;
+            if(comp.on)
+            {
+                totalPowerCons += comp.powerConsumption;
+            }
+            totalPowerGen += comp.powerGeneration;
+            totalPowerStored += comp.powerStored;
         }
     }
-    public void addCompartment(compartmentController controller)
+    public void addModule(GameObject module)
     {
-        compartments.Add(controller);
+        modules.Add(module);
+        compartments.Add(module.GetComponent<compartmentController>());
+    }
+
+    public void removeModule(GameObject module)
+    {
+        modules.Remove(module);
+        compartments.Remove(module.GetComponent<compartmentController>());
     }
 }
-

@@ -14,13 +14,13 @@ public class DockingController : MonoBehaviour
     public bool docked;
     Rigidbody body;
     DockingPort port;
-    GameObject stationMaster;
+    GameObject stationCore;
+    StationController stationMaster;
     Vector3 movement, rotationSpeed;
     public float Xsensitivity, Ysensitivity, rollThrust, RCSThrust, stabilisationForce;
 
     void Awake()
     {
-        //Debug.Log(Vector3.Angle(Vector3.up, Vector3.down));
         body = GetComponent<Rigidbody>();
         if(dockingMode)
         {
@@ -45,13 +45,13 @@ public class DockingController : MonoBehaviour
             }
         }
 
-        //activeDockingPort = 0;
+        activeDockingPort = 0;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        //Debug.Log(gameObject.name + " " + transform.eulerAngles);
-        //Debug.Log("Enter Trigger");
+
+        Debug.Log("Enter Trigger");
         switch (other.tag)
         {
             case "DockingPort":
@@ -59,30 +59,18 @@ public class DockingController : MonoBehaviour
                 {
                     
                     DockingPort port = other.gameObject.GetComponent<DockingPort>();
-                    //Debug.Log("checking angles");
+                    Debug.Log("checking angles");
 
                     float pitchYaw = Vector3.Angle(transform.TransformDirection(portControllers[activeDockingPort].portAxis), other.transform.TransformDirection(port.alignmentVector));
                     float roll = Vector3.SignedAngle(other.transform.TransformDirection(Vector3.up), portControllers[activeDockingPort].transform.TransformDirection(Vector3.up), other.transform.TransformDirection(port.portAxis));
-                    //Debug.Log("PitchYaw: " + pitchYaw);
-                    //Debug.Log("Roll: " + roll);
-                    if(roll < 2 && pitchYaw < 2)
+                    Debug.Log("PitchYaw: " + pitchYaw);
+                    Debug.Log("Roll: " + roll);
+                    if(roll < 4 && (pitchYaw < 4 || pitchYaw > 176))
                     {
                         Debug.Log("Modules Aligned");
                         dock(other);
                     }
-                    //Transform obj = other.transform.parent.parent;
-                    //if ((transform.eulerAngles.x <= 360 - obj.eulerAngles.x + 2 &&
-                    //    transform.eulerAngles.x >= 360 - obj.eulerAngles.x - 2 &&
-                    //    transform.eulerAngles.z <= 360 - obj.eulerAngles.z + 2 &&
-                    //    transform.eulerAngles.z >= 360 - obj.eulerAngles.z - 2) || (
-                    //    transform.eulerAngles.x <= obj.eulerAngles.x + 2 &&
-                    //    transform.eulerAngles.x >= obj.eulerAngles.x - 2 &&
-                    //    transform.eulerAngles.z <= obj.eulerAngles.z + 2 &&
-                    //    transform.eulerAngles.z >= obj.eulerAngles.z - 2))
-                    //{
-                    //    Debug.Log("angles valid");
-                    //    dock(other);
-                    //}
+
                 }
                 break;
         }
@@ -96,13 +84,12 @@ public class DockingController : MonoBehaviour
                 if (dockingMode && canDock)
                 {
                     DockingPort port = other.gameObject.GetComponent<DockingPort>();
-                    //Debug.Log("checking angles");
+
 
                     float pitchYaw = Vector3.Angle(transform.TransformDirection(portControllers[activeDockingPort].portAxis), other.transform.TransformDirection(port.alignmentVector));
                     float roll = Vector3.SignedAngle(other.transform.TransformDirection(Vector3.up), portControllers[activeDockingPort].transform.TransformDirection(Vector3.up), other.transform.TransformDirection(port.portAxis));
-                    //Debug.Log("PitchYaw: " + pitchYaw);
-                    //Debug.Log("Roll: " + roll);
-                    if (roll < 2 && pitchYaw < 2)
+
+                    if (roll < 4 && (pitchYaw < 4 || pitchYaw > 176))
                     {
                         Debug.Log("Modules Aligned");
                         dock(other);
@@ -126,7 +113,11 @@ public class DockingController : MonoBehaviour
         {docked = true;}
         else
         {docked = false;}
-
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            //body.AddForce(Vector3.forward * 10, ForceMode.Impulse);
+            rotationSpeed += new Vector3(1.0f, 0.0f);
+        }
         if(dockingMode && !docked)
         {
             doMovement();
@@ -215,9 +206,22 @@ public class DockingController : MonoBehaviour
         portControllers[activeDockingPort].isChild = true;
         port.docked = dockingPorts[activeDockingPort];
         Vector3 dir = other.transform.TransformDirection(port.alignmentVector);
-        Quaternion newRot = Quaternion.FromToRotation(portControllers[activeDockingPort].alignmentVector, dir);
+        Quaternion newRot = Quaternion.FromToRotation(portControllers[activeDockingPort].portAxis, dir);
         transform.rotation = newRot;
         transform.localEulerAngles = new Vector3(0.0f, transform.localEulerAngles.y, 0.0f);
+
+        GameObject otherModule = other.transform.parent.parent.gameObject;
+        DockingController otherController = other.transform.parent.parent.gameObject.GetComponent<DockingController>();
+        if (otherController.stationMaster)
+        {
+            stationCore = otherController.stationCore;
+            stationMaster = otherController.stationMaster;
+        }
+        else
+        {
+            stationCore = otherModule;
+            stationMaster = otherModule.AddComponent<StationController>();
+        }
     }
     public void Undock(int ID)
     {
@@ -247,6 +251,7 @@ public class DockingController : MonoBehaviour
     public void enableDockingMode()
     {
         dockingMode = true;
+        Debug.Log(activeDockingPort);
         portControllers[activeDockingPort].portCam.enabled = true;
     }
     public void disableDockingMode()
