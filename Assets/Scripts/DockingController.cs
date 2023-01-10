@@ -102,6 +102,10 @@ public class DockingController : MonoBehaviour
     private void Update()
     {
         bool isDocked = false;
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            rotationSpeed += new Vector3(1.0f, 0.0f);
+        }
         foreach (DockingPort port in portControllers)
         {
             if(port.docked)
@@ -113,11 +117,7 @@ public class DockingController : MonoBehaviour
         {docked = true;}
         else
         {docked = false;}
-        if(Input.GetKeyDown(KeyCode.E))
-        {
-            //body.AddForce(Vector3.forward * 10, ForceMode.Impulse);
-            rotationSpeed += new Vector3(1.0f, 0.0f);
-        }
+
         if(dockingMode && !docked)
         {
             doMovement();

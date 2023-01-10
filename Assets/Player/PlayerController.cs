@@ -171,10 +171,14 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit = magGrounded();
         if (grounded)
         {
-            Vector3 up = hit.normal;
+            Debug.Log("Global " + hit.normal);
+            Debug.Log("Local " + hit.collider.transform.InverseTransformDirection(hit.normal));
+
+            Vector3 up = hit.collider.transform.InverseTransformDirection(hit.normal);
             DoRotation();
             if (transform.parent != hit.collider.transform)
             {
+                Debug.Log("new parent");
                 transform.parent = hit.collider.transform;
                 Vector3 floorScale = transform.parent.lossyScale;
                 transform.localScale = new Vector3(playerScale.x / floorScale.x, playerScale.y / floorScale.y, playerScale.z / floorScale.z);
@@ -190,11 +194,12 @@ public class PlayerController : MonoBehaviour
                     Debug.Log("setting rotation");
                     cam.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                     transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                    transform.RotateAround(transform.position, up, Y);
+                    transform.RotateAround(transform.position, hit.normal, Y);
                     prevUp = up;
                 }
             }
-            transform.RotateAround(transform.position, up, rotY);
+
+            transform.RotateAround(transform.position, hit.normal, rotY);
             totalRotY += rotY;
             rotX = Mathf.Clamp(rotX, -80f, 80f);
             cam.transform.localEulerAngles = new Vector3(rotX, 0.0f, 0.0f);

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class StationController : MonoBehaviour
 {
-    List<compartmentController> compartments;
-    List<GameObject> modules;
+    List<compartmentController> compartments = new List<compartmentController>();
+    List<GameObject> modules = new List<GameObject>();
 
-    float totalStoredAir;
+    float totalStoredAir, pressurisationRate;
     float totalPowerGen, totalPowerCons, totalPowerStored;
 
     private void Awake()
@@ -33,6 +33,34 @@ public class StationController : MonoBehaviour
             totalPowerStored += comp.powerStored;
         }
     }
+
+    public void pressuriseModule(compartmentController controller)
+    {
+        if(totalStoredAir > 0)
+        {
+            for (int I = 0; I < compartments.Count; I++)
+            {
+                if (compartments[I].storedAir > 0)
+                {
+                    if (compartments[I].storedAir - pressurisationRate <= 0)
+                    {
+                        controller.volumeInRoom += compartments[I].storedAir;
+                        compartments[I].storedAir = 0;
+                    }
+                    compartments[I].storedAir -= pressurisationRate;
+                }
+                else
+                {
+                }
+            }
+        }
+    }
+
+    public void depressuriseModule(compartmentController controller)
+    {
+        int ID = 0;
+    }
+
     public void addModule(GameObject module)
     {
         modules.Add(module);
