@@ -24,7 +24,6 @@ public class PlayerController : MonoBehaviour
     CapsuleCollider col;
     Vector3 prevUp;
     bool lockmouse = true;
-    Vector3 groundedHit;
 
     public float Xsensitivity, Ysensitivity, rollThrust, Thrust, walkSpeed, runSpeed, jumpForce, stabilisationForce;
     public GameObject cam;
@@ -126,45 +125,12 @@ public class PlayerController : MonoBehaviour
         {
             RaycastHit hit;
             Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, 1.1f, ~ignore);
-            Vector3 yPos = transform.parent.InverseTransformPoint(hit.point) + transform.parent.InverseTransformDirection(hit.normal);
-            Vector3 newPos = new Vector3(transform.localPosition.x, yPos.y, transform.localPosition.z);
-            //Debug.Log("current position: " + transform.localPosition);
-            //Debug.Log("local hit point: " + transform.parent.InverseTransformPoint(hit.point));
-            //Debug.Log("local up: " + transform.parent.InverseTransformDirection(hit.normal));
-            //Debug.Log("new position: " + newPos);
-            transform.localPosition = newPos;
-            //Debug.Log("Final position: " + transform.localPosition.y);
-            if(positionCorrection.Count < 1000)
-            {
-                positionCorrection.Add(transform.localPosition.y);
-            }
-            else
-            {
-                double val = 0;
-                for(int i = 0; i < positionCorrection.Count; i++)
-                {
-                    val += positionCorrection[i];
-                }
-                val /= positionCorrection.Count;
-                Debug.Log(val);
-            }
+            Vector3 hitPos = transform.parent.InverseTransformPoint(hit.point);
+            Vector3 newPos = hitPos + transform.parent.InverseTransformDirection(transform.TransformDirection(Vector3.up));
+            transform.localPosition = newPos; 
         }
     }
 
-    private void LateUpdate()
-    {
-        //if (grounded && magBoots)
-        //{
-        //    RaycastHit hit;
-        //    Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, 1.1f, ~ignore);
-        //    Vector3 yPos = transform.parent.InverseTransformPoint(hit.point) + transform.InverseTransformDirection(new Vector3(0.0f, 1.0f, 0.0f));
-        //    Vector3 newPos = new Vector3(transform.localPosition.x, yPos.y, transform.localPosition.z);
-        //    Debug.Log("current position: " + transform.localPosition);
-        //    Debug.Log("local hit point: " + transform.parent.InverseTransformPoint(hit.point));
-        //    Debug.Log("new position: " + newPos);
-        //    transform.localPosition = newPos;
-        //}
-    }
     void DoMovement()
     {
         body.angularVelocity = new Vector3(0.0f, 0.0f, 0.0f);
@@ -225,10 +191,6 @@ public class PlayerController : MonoBehaviour
         RaycastHit hit = magGrounded();
         if (grounded)
         {
-            //Debug.Log(transform.localPosition);
-            //Debug.Log("Global " + hit.normal);
-            //Debug.Log("Local " + hit.collider.transform.InverseTransformDirection(hit.normal));
-            //transform.localPosition = transform.InverseTransformPoint(hit.point) + new Vector3(transform.localPosition.x, col.height / 2, transform.localPosition.z);
             Vector3 up = hit.collider.transform.InverseTransformDirection(hit.normal);
             DoRotation();
             if (transform.parent != hit.collider.transform)
@@ -293,15 +255,10 @@ public class PlayerController : MonoBehaviour
         {
             if(Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, 1.1f, ~ignore))
             {
-                groundedHit = hit.point;
-                //Debug.Log(transform.InverseTransformPoint(hit.point));
                 grounded = true;
-                //Debug.Log("1 " + hit.collider.name);
-                //Debug.Log("Grounded 1");
             }
             else
             {
-                //Debug.Log("not grounded 1");
                 grounded = false;
             }
         }
@@ -309,13 +266,10 @@ public class PlayerController : MonoBehaviour
         {
             if (ground)
             {
-                //Debug.Log("2 " + hit.collider.name);
-                //Debug.Log("Grounded 2");
                 grounded = true;
             }
             else
             {
-                //Debug.Log("not grounded 2");
                 grounded = false;
             }
         }
