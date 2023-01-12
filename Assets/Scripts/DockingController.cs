@@ -98,7 +98,10 @@ public class DockingController : MonoBehaviour
                 break;
         }
     }
-
+    private void LateUpdate()
+    {
+        //transform.Rotate(rotationSpeed * Time.deltaTime, Space.Self);
+    }
     private void Update()
     {
         bool isDocked = false;
@@ -135,7 +138,7 @@ public class DockingController : MonoBehaviour
             }
         }
 
-        transform.Rotate(rotationSpeed * Time.deltaTime, Space.World);
+        transform.Rotate(rotationSpeed * Time.deltaTime, Space.Self);
         
     }
 
