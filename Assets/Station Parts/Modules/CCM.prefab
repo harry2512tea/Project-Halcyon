@@ -2185,6 +2185,7 @@ GameObject:
   - component: {fileID: 6459289434698589998}
   - component: {fileID: 3201607991650968213}
   - component: {fileID: 5285571332615340219}
+  - component: {fileID: 6390103745115117962}
   m_Layer: 0
   m_Name: CCM
   m_TagString: Untagged
@@ -2253,6 +2254,32 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &6390103745115117962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342130405799424190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf918431ab34cd4b8b5ba320c2533d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storedAir: 0
+  maxStoredAir: 120
+  airQuality: 0
+  totalAirQuality: 0
+  roomVolume: 84.375
+  volumeInRoom: 0
+  pressure: 0
+  powerConsumption: 0
+  powerGeneration: 0
+  powerStored: 0
+  maxPowerStored: 0
+  forceMultiplier: 0
+  on: 0
+  mainController: {fileID: 0}
 --- !u!1 &6466869835877384744
 GameObject:
   m_ObjectHideFlags: 0

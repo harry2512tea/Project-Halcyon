@@ -6,7 +6,6 @@ public class DoorController : MonoBehaviour
 {
     public bool open = false;
     public compartmentController attachedRoom;
-
     public DoorController linkedDoor;
     public bool linked = false;
     public GameObject leftDoor, rightDoor;
@@ -44,10 +43,6 @@ public class DoorController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
-    {
-    }
-
     public void Open()
     {
         if(linked)
@@ -74,6 +69,7 @@ public class DoorController : MonoBehaviour
     {
         linked = true;
         linkedDoor = door;
+        attachedRoom = door.transform.parent.gameObject.GetComponent<compartmentController>();
     }
 
     public void unDock()
@@ -81,6 +77,7 @@ public class DoorController : MonoBehaviour
         linked = false;
         linkedDoor = null;
         open = false;
+        attachedRoom = null;
     }
 
     public void Interact()

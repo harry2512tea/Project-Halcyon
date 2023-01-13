@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class StationController : MonoBehaviour
 {
-    List<compartmentController> compartments = new List<compartmentController>();
-    List<GameObject> modules = new List<GameObject>();
-
-    float totalStoredAir, pressurisationRate;
+    public List<compartmentController> compartments = new List<compartmentController>();
+    public List<GameObject> modules = new List<GameObject>();
+    public int dockedModules;
+    public float totalStoredAir, pressurisationRate;
     float totalPowerGen, totalPowerCons, totalPowerStored;
 
     private void Awake()
     {
         modules.Add(gameObject);
         compartments.Add(GetComponent<compartmentController>());
+        dockedModules = 0;
     }
 
     private void FixedUpdate()
@@ -32,8 +33,14 @@ public class StationController : MonoBehaviour
             totalPowerGen += comp.powerGeneration;
             totalPowerStored += comp.powerStored;
         }
-    }
 
+        if (dockedModules < 1)
+        {
+            Debug.Log("Destroying station controller");
+            Destroy(this);
+        }
+        
+    }
     public void pressuriseModule(compartmentController controller)
     {
         if(totalStoredAir > 0)
@@ -58,18 +65,19 @@ public class StationController : MonoBehaviour
 
     public void depressuriseModule(compartmentController controller)
     {
-        int ID = 0;
     }
 
     public void addModule(GameObject module)
     {
         modules.Add(module);
         compartments.Add(module.GetComponent<compartmentController>());
+        dockedModules++;
     }
 
     public void removeModule(GameObject module)
     {
         modules.Remove(module);
         compartments.Remove(module.GetComponent<compartmentController>());
+        dockedModules--;
     }
 }

@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
     public float Xsensitivity, Ysensitivity, rollThrust, Thrust, walkSpeed, runSpeed, jumpForce, stabilisationForce;
     public GameObject cam;
 
-    float rotX, rotY, totalRotY;
+    float rotX, rotY;
 
     //statistic collection
     List<float> positionCorrection = new List<float>();
@@ -195,7 +195,7 @@ public class PlayerController : MonoBehaviour
             DoRotation();
             if (transform.parent != hit.collider.transform)
             {
-                Debug.Log("new parent");
+                //Debug.Log("new parent");
                 transform.parent = hit.collider.transform;
                 Vector3 floorScale = transform.parent.lossyScale;
                 transform.localScale = new Vector3(playerScale.x / floorScale.x, playerScale.y / floorScale.y, playerScale.z / floorScale.z);
@@ -208,7 +208,7 @@ public class PlayerController : MonoBehaviour
                 if (up != prevUp)
                 {
                     float Y = transform.localEulerAngles.y;
-                    Debug.Log("setting rotation");
+                    //Debug.Log("setting rotation");
                     cam.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
                     transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
                     transform.RotateAround(transform.position, hit.normal, Y);
@@ -217,7 +217,6 @@ public class PlayerController : MonoBehaviour
             }
 
             transform.RotateAround(transform.position, hit.normal, rotY);
-            totalRotY += rotY;
             rotX = Mathf.Clamp(rotX, -80f, 80f);
             cam.transform.localEulerAngles = new Vector3(rotX, 0.0f, 0.0f);
 

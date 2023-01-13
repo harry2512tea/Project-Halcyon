@@ -14,13 +14,15 @@ public class DockingController : MonoBehaviour
     public bool docked;
     Rigidbody body;
     DockingPort port;
-    GameObject stationCore;
-    StationController stationMaster;
+    public GameObject stationCore;
+    public StationController stationMaster;
     Vector3 movement, rotationSpeed;
     public float Xsensitivity, Ysensitivity, rollThrust, RCSThrust, stabilisationForce;
+    compartmentController thisCompartment;
 
     void Awake()
     {
+        thisCompartment = GetComponent<compartmentController>();
         body = GetComponent<Rigidbody>();
         if(dockingMode)
         {
@@ -51,7 +53,7 @@ public class DockingController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
 
-        Debug.Log("Enter Trigger");
+        //Debug.Log("Enter Trigger");
         switch (other.tag)
         {
             case "DockingPort":
@@ -59,15 +61,15 @@ public class DockingController : MonoBehaviour
                 {
                     
                     DockingPort port = other.gameObject.GetComponent<DockingPort>();
-                    Debug.Log("checking angles");
+                    //Debug.Log("checking angles");
 
                     float pitchYaw = Vector3.Angle(transform.TransformDirection(portControllers[activeDockingPort].portAxis), other.transform.TransformDirection(port.alignmentVector));
                     float roll = Vector3.SignedAngle(other.transform.TransformDirection(Vector3.up), portControllers[activeDockingPort].transform.TransformDirection(Vector3.up), other.transform.TransformDirection(port.portAxis));
-                    Debug.Log("PitchYaw: " + pitchYaw);
-                    Debug.Log("Roll: " + roll);
+                    //Debug.Log("PitchYaw: " + pitchYaw);
+                    //Debug.Log("Roll: " + roll);
                     if(roll < 4 && (pitchYaw < 4 || pitchYaw > 176))
                     {
-                        Debug.Log("Modules Aligned");
+                        //Debug.Log("Modules Aligned");
                         dock(other);
                     }
 
@@ -91,16 +93,12 @@ public class DockingController : MonoBehaviour
 
                     if (roll < 4 && (pitchYaw < 4 || pitchYaw > 176))
                     {
-                        Debug.Log("Modules Aligned");
+                        //Debug.Log("Modules Aligned");
                         dock(other);
                     }
                 }
                 break;
         }
-    }
-    private void LateUpdate()
-    {
-        //transform.Rotate(rotationSpeed * Time.deltaTime, Space.Self);
     }
     private void Update()
     {
@@ -183,7 +181,7 @@ public class DockingController : MonoBehaviour
 
     void dock(Collider other)
     {
-        Debug.Log("Docking");
+        //Debug.Log("Docking");
         canDock = false;
         body.isKinematic = true;
         rotationSpeed = new Vector3(0.0f, 0.0f, 0.0f);
@@ -217,14 +215,23 @@ public class DockingController : MonoBehaviour
         DockingController otherController = other.transform.parent.parent.gameObject.GetComponent<DockingController>();
         if (otherController.stationMaster)
         {
+            Debug.Log("station master exists");
             stationCore = otherController.stationCore;
             stationMaster = otherController.stationMaster;
         }
         else
         {
+            Debug.Log("adding station master");
+            Debug.Log(otherModule);
             stationCore = otherModule;
             stationMaster = otherModule.AddComponent<StationController>();
+            Debug.Log(stationMaster);
+            otherController.stationCore = stationCore;
+            otherController.stationMaster = stationMaster;
         }
+        otherModule.GetComponent<compartmentController>().mainController = stationMaster;
+        stationMaster.addModule(gameObject);
+        
     }
     public void Undock(int ID)
     {
@@ -243,10 +250,11 @@ public class DockingController : MonoBehaviour
             GameObject obj = portControllers[ID].stationComponent;
             Vector3 childPos = obj.transform.position;
             obj.transform.parent = null;
-            Rigidbody temp = obj.GetComponent<DockingController>().addRigidBody();
+            DockingController temp = obj.GetComponent<DockingController>();
             body.AddForce((transform.position - childPos).normalized * 0.3f, ForceMode.VelocityChange);
             portControllers[ID].docked.GetComponent<DockingPort>().attachedDoor.unDock();
             portControllers[ID].attachedDoor.unDock();
+            temp.addRigidBody();
 
         }
     }

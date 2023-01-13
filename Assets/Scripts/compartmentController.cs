@@ -5,16 +5,26 @@ using UnityEngine;
 public class compartmentController : MonoBehaviour
 {
     public float storedAir, maxStoredAir, airQuality, totalAirQuality, roomVolume, volumeInRoom, pressure;
-    public float powerConsumption, powerGeneration, powerStored, maxPowerStored;
+    public float powerConsumption, powerGeneration, powerStored, maxPowerStored, basePowerConsumption;
     public float forceMultiplier;
     public bool on;
     public StationController mainController;
+    DockingController dockingCont;
     List<DoorController> doors = new List<DoorController>();
     List<GameObject> physicsObjects = new List<GameObject>();
     List<Rigidbody> physicsBodies = new List<Rigidbody>();
 
     private void Awake()
     {
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.tag == "Door")
+            {
+                doors.Add(child.gameObject.GetComponent<DoorController>());
+            }
+        }
+
+        dockingCont = GetComponent<DockingController>();
         storedAir = 0;
         airQuality = roomVolume;
         powerStored = 0;
@@ -24,15 +34,17 @@ public class compartmentController : MonoBehaviour
     private void FixedUpdate()
     {
         pressure = volumeInRoom / roomVolume;
-
+        Debug.Log(gameObject.name + "attached doors count: " + doors.Count);
         for(int I = 0; I < doors.Count; I++)
         {
             if (doors[I].open)
             {
+                Debug.Log(gameObject.name + "Open Door");
                 if (doors[I].linked)
                 {
                     if(doors[I].attachedRoom.pressure < pressure)
                     {
+                        Debug.Log(gameObject.name + "Pressure difference");
                         float pressureDiff = pressure - doors[I].attachedRoom.pressure;
                         float totalVolume = roomVolume + doors[I].attachedRoom.roomVolume;
                         float totalAir = volumeInRoom + doors[I].attachedRoom.volumeInRoom;

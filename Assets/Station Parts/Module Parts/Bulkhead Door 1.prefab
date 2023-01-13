@@ -4990,7 +4990,7 @@ GameObject:
   - component: {fileID: 1619151114508700370}
   m_Layer: 0
   m_Name: Bulkhead Door 1
-  m_TagString: Untagged
+  m_TagString: Door
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5031,7 +5031,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   open: 0
+  attachedRoom: {fileID: 0}
   linkedDoor: {fileID: 0}
+  linked: 0
   leftDoor: {fileID: 2155607333051376190}
   rightDoor: {fileID: 2302143357322815173}
   leftOpenPosition: {x: -0.5, y: 0.5, z: 1.25}

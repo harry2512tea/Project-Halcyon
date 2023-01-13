@@ -3674,6 +3674,7 @@ GameObject:
   - component: {fileID: 1387491288401865852}
   - component: {fileID: 3666879304126127676}
   - component: {fileID: 3456838154627017232}
+  - component: {fileID: 33826032969538469}
   m_Layer: 0
   m_Name: CIM
   m_TagString: Untagged
@@ -3742,6 +3743,33 @@ MonoBehaviour:
   rollThrust: 0.2
   RCSThrust: 2
   stabilisationForce: 0.5
+--- !u!114 &33826032969538469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8722625974270946049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edf918431ab34cd4b8b5ba320c2533d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  storedAir: 0
+  maxStoredAir: 0
+  airQuality: 0
+  totalAirQuality: 0
+  roomVolume: 131.25
+  volumeInRoom: 0
+  pressure: 0
+  powerConsumption: 0
+  powerGeneration: 0
+  powerStored: 0
+  maxPowerStored: 0
+  basePowerConsumption: 0
+  forceMultiplier: 0
+  on: 0
+  mainController: {fileID: 0}
 --- !u!1001 &5275402433332507529
 PrefabInstance:
   m_ObjectHideFlags: 0
