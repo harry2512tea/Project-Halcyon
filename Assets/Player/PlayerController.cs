@@ -104,10 +104,6 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
 
-            case movementType.Grav:
-                Grav();
-                break;
-
             case movementType.mag:
                 Mag();
                 break;
@@ -171,18 +167,6 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButton("Stabilise"))
         {
             Stabilise();
-        }
-    }
-
-    void Grav()
-    {
-        Grounded();
-        if (!grounded)
-        {
-        }
-        else
-        {
-            body.velocity = movement * walkSpeed;
         }
     }
 

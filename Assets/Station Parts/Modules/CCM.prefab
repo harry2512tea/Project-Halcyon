@@ -1818,7 +1818,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1023
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -2233,6 +2233,8 @@ MonoBehaviour:
   mass: 100
   canDock: 1
   docked: 0
+  stationCore: {fileID: 0}
+  stationMaster: {fileID: 0}
   Xsensitivity: 3
   Ysensitivity: 3
   rollThrust: 0.2
@@ -2277,6 +2279,7 @@ MonoBehaviour:
   powerGeneration: 0
   powerStored: 0
   maxPowerStored: 0
+  basePowerConsumption: 0
   forceMultiplier: 0
   on: 0
   mainController: {fileID: 0}
@@ -3615,7 +3618,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1023
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

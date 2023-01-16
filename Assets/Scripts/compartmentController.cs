@@ -13,6 +13,7 @@ public class compartmentController : MonoBehaviour
     List<DoorController> doors = new List<DoorController>();
     List<GameObject> physicsObjects = new List<GameObject>();
     List<Rigidbody> physicsBodies = new List<Rigidbody>();
+    List<ModuleMachines> machines = new List<ModuleMachines>();
 
     private void Awake()
     {

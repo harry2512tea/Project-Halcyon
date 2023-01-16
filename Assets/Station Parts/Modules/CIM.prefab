@@ -1785,7 +1785,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1023
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -3651,7 +3651,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1023
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -3738,6 +3738,8 @@ MonoBehaviour:
   mass: 10000
   canDock: 1
   docked: 0
+  stationCore: {fileID: 0}
+  stationMaster: {fileID: 0}
   Xsensitivity: 3
   Ysensitivity: 3
   rollThrust: 0.2
