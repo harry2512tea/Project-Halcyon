@@ -2,14 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using static PlayerOrbit;
+
 
 public class CelestialBody : MonoBehaviour
 {
-    public bool isStar = false;
+    public bool isStationary = false;
+    public PlayerOrbit orbitInfo;
     public GameObject orbitingBody;
     CelestialBody orbitingBodyController;
     public Transform ascNode, incl, pArg, position, model;
-    double Periapsis, Apoapsis;
+    public float scaleMultiplication;
     public float radius;
     public float orbitalPosition, inclination, periapsisArg, ascendingNode;
     public float eccentricity, semiMajAxis;
@@ -20,7 +23,7 @@ public class CelestialBody : MonoBehaviour
     private void Awake()
     {
         G = 6.6743e-11;
-        if (!isStar)
+        if (!isStationary)
         {
             orbitingBodyController = orbitingBody.GetComponent<CelestialBody>();
             ascNode.localRotation = Quaternion.Euler(0.0f, ascendingNode, 0.0f);
@@ -35,7 +38,7 @@ public class CelestialBody : MonoBehaviour
             double K = (4 * Math.PI) / (G * (M + (orbitingBodyController.mass * 907.2)));
             double density = M / V;
             Debug.Log(gameObject.name + "Radius: "  + R);
-            orbitalPeriod = Math.Sqrt((3 * Math.PI) / (G * density));
+            //orbitalPeriod = Math.Sqrt((3 * Math.PI) / (G * density));
             //orbitalPeriod = Mathf.Pow((2 * Mathf.PI * Mathf.Pow(R * 1000, 3 / 2)) / (Mathf.Sqrt((float)G) * Mathf.Sqrt((float)orbitingBodyController.mass * 1000)), 3);
             //double temp = (4 * Math.PI * Math.PI) / (G * orbitingBodyController.mass * 907.2);
             //orbitalPeriod = Math.Sqrt(temp * Math.Pow(R * 1000, 3));
@@ -45,7 +48,7 @@ public class CelestialBody : MonoBehaviour
     }
     private void Update()
     {
-        if(!isStar)
+        if(!isStationary)
         {
             double distance = (semiMajAxis * 1000 * (1 - (eccentricity * eccentricity))) / (1 + eccentricity * Mathf.Cos((orbitalPosition * Mathf.PI/180)));
             double temp = (float)G * (float)orbitingBodyController.mass * ((2 / (float)distance) - (1 / (semiMajAxis * 1000)));
