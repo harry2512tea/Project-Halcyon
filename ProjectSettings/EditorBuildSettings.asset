@@ -8,4 +8,5 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Ship Testing.unity
     guid: 18e9a5294b38f5e4a8eb43d29997de65
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: a4e59649fffa27945b2b554c277d58de, type: 2}
