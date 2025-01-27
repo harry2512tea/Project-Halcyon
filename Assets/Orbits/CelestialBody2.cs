@@ -8,13 +8,15 @@ public class CelestialBody2 : MonoBehaviour
     [SerializeField]
     bool isStationary = false;
 
+    public bool stableOrbit = true;
+
     [SerializeField]
     GameObject orbitingBody;
 
     CelestialBody2 orbitingBodyController;
 
     [SerializeField]
-    public Transform ascNode, incl, pArg, position, model, moons;
+    Transform ascNode, incl, pArg, position, modelPos, model, moons, velocityCalc;
 
     [SerializeField]
     float scaleDivision = 1;
@@ -25,18 +27,27 @@ public class CelestialBody2 : MonoBehaviour
 
     //semiMajAxis in KM
     [SerializeField]
-    double eccentricity, semiMajAxis, orbitalHeight;
-    [SerializeField]
     float orbitalPosition, inclination, periapsisArg, ascendingNode;
+    [SerializeField]
+    double eccentricity, semiMajAxis, semiMinAxis, orbitalHeight, orbitalSpeed;
+
+    [SerializeField]
+    Vector3 orbitalVelocity;
+
+    
 
     //mass in tons. multiply by to get kg 907.2
     [SerializeField]
     double orbitalPeriod, mass;
 
+    //Day Length in hours;
+    [SerializeField]
+    float dayLength;
+
     const double G = 6.6743e-11;
 
     [SerializeField]
-    double u;
+    double GM, u;
 
     double timeSincePeriapsis = 0.0;
 
@@ -44,6 +55,8 @@ public class CelestialBody2 : MonoBehaviour
     double T;
 
     double meanMotion;
+
+    float degreesPerSecond;
 
     private void Awake()
     {
@@ -63,24 +76,20 @@ public class CelestialBody2 : MonoBehaviour
             
             //semi-minor axis (km)
             double b = semiMajAxis * Math.Sqrt(1 - (eccentricity * eccentricity));
-
+            semiMinAxis = b;
             //orbital period calculation in seconds
             //semiMajor Axis in meters
             double a = semiMajAxis * 1000;
-            Debug.Log(a);
+
             double aCubed = (a * a * a);
-            Debug.Log(aCubed);
 
             double twoPi = Math.PI * 2;
 
             double orbitingBodyMass = orbitingBodyController.getMass() * 1000;
-            Debug.Log(orbitingBodyMass);
 
-            double GM = G * orbitingBodyMass;
+            GM = G * orbitingBodyMass;
 
             T = twoPi * Math.Sqrt(aCubed / GM);
-
-            Debug.Log((float)T);
 
             meanMotion = 2 * Mathf.PI / T;
 
@@ -88,6 +97,9 @@ public class CelestialBody2 : MonoBehaviour
             double T_days = (double)(T / 86400);
             orbitalPeriod = T_days;
         }
+
+        degreesPerSecond = 360 / (dayLength * 3600f);
+        
     }
 
     private void Update()
@@ -101,21 +113,35 @@ public class CelestialBody2 : MonoBehaviour
                 timeSincePeriapsis -= T;
             }
 
-            //Orbital Position Calculations
+            //Orbital Position Calculations. position in degrees
             orbitalPosition = (float)calculateTrueAnomaly(eccentricity, meanMotion * timeSincePeriapsis);
 
             //orbital height calculation in meters
             orbitalHeight = (semiMajAxis * 1000 * (1 - (eccentricity * eccentricity))) / (1 + eccentricity * Math.Cos(orbitalPosition));
 
+            calculateOrbitalVelocity();
 
             //updating the position of the planet in the scene
             position.localEulerAngles = new Vector3(0.0f, (float)orbitalPosition, 0.0f);
-            model.localPosition = new Vector3(0.0f, 0.0f, (float)(orbitalHeight / 1000) / scaleDivision);
-            model.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+            modelPos.localPosition = new Vector3(0.0f, 0.0f, (float)(orbitalHeight / 1000) / scaleDivision);
+            modelPos.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
 
             moons.localPosition = new Vector3(0.0f, 0.0f, (float)(orbitalHeight / 1000) / scaleDivision);
             moons.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+            
+            
         }
+        if (model.localEulerAngles.y + degreesPerSecond * Time.deltaTime < 360)
+        {
+            model.localEulerAngles += new Vector3(0.0f, degreesPerSecond, 0.0f) * Time.deltaTime;
+        }
+        else
+        {
+            float newY = (model.localEulerAngles.y + (degreesPerSecond * Time.deltaTime)) - 360;
+            model.localEulerAngles += new Vector3(0.0f, newY, 0.0f);
+        }
+
+
     }
 
     double calculateTrueAnomaly(double e, double M)
@@ -136,5 +162,27 @@ public class CelestialBody2 : MonoBehaviour
         return Mathf.Rad2Deg * trueAnomalyRadians;
     }
 
+    double calculateOrbitalVelocity()
+    {
+        //orbital speed in m/s
+        u = G * (orbitingBodyController.getMass() * 1000);
+        orbitalSpeed = Math.Sqrt(u * ((2/(orbitalHeight)) - (1/(semiMajAxis * 1000))));
+
+        float nextPos = (float)calculateTrueAnomaly(eccentricity, meanMotion * (timeSincePeriapsis + 3600));
+
+        velocityCalc.localEulerAngles = new Vector3(0.0f, nextPos, 0.0f);
+
+        float nextHeight = (float)((float)(semiMajAxis * 1000 * (1 - (eccentricity * eccentricity))) / (1 + eccentricity * Math.Cos(nextPos)));
+
+        Vector3 pos = velocityCalc.TransformPoint(Vector3.forward * ((nextHeight / 1000) / scaleDivision));
+
+        Vector3 direction = (pos - position.localPosition);
+
+        orbitalVelocity = direction.normalized * (float)orbitalSpeed;
+
+        return 0;
+    }
+
     double getMass() { return mass; }
+    double getRadius() { return radius; }
 }
