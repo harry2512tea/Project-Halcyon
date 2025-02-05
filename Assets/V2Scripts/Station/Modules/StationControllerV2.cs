@@ -18,7 +18,7 @@ public class StationControllerV2 : MonoBehaviour
     List<SubSystemBase> m_subSystems = new List<SubSystemBase>();
 
     [SerializeField]
-    List<DockingPortV2> dockingPorts = new List<DockingPortV2>();
+    List<DockingPortV2> m_dockingPorts = new List<DockingPortV2>();
 
     InputSystem_Actions input;
 
@@ -26,7 +26,9 @@ public class StationControllerV2 : MonoBehaviour
     {
         input = new InputSystem_Actions();
         m_Compartment = GetComponent<CompartmentControllerV2>();
-        dockingPorts.AddRange(m_Compartment.GetDockingPorts());
+        AddCompartments(m_Compartment);
+        //m_dockingPorts.AddRange(m_Compartment.GetDockingPorts());
+        //m_Compartments.Add(m_Compartment);
     }
 
     private void OnEnable()
@@ -34,10 +36,14 @@ public class StationControllerV2 : MonoBehaviour
         input.Enable();
 
         CompartmentControllerV2.OnDock += OnDock;
-        CompartmentControllerV2.OnUndock += OnUndock;
+
+        DockingPortV2.unDock += OnUndock;
+        //CompartmentControllerV2.OnUndock += OnUndock;
 
         //input.Modules.Move.performed += onMovePerformed;
         //input.Modules.Move.canceled += onMoveCancelled;
+
+        AddCompartments(m_Compartment);
     }
 
     private void OnDisable()
@@ -45,7 +51,14 @@ public class StationControllerV2 : MonoBehaviour
         input.Disable();
 
         CompartmentControllerV2.OnDock -= OnDock;
-        CompartmentControllerV2.OnUndock -= OnUndock;
+
+        DockingPortV2.unDock -= OnUndock;
+
+        m_Compartments.Clear();
+        m_generators.Clear();
+        m_subSystems.Clear();
+        m_dockingPorts.Clear();
+        //CompartmentControllerV2.OnUndock -= OnUndock;
 
         //input.Modules.Move.performed -= onMovePerformed;
         //input.Modules.Move.canceled -= onMoveCancelled;
@@ -62,9 +75,28 @@ public class StationControllerV2 : MonoBehaviour
 
     void OnUndock(DockingData _Data)
     {
-        if (_Data.Target == this)
+        if (_Data.StationTarget == this)
         {
-            RemoveCompartments(_Data.Caller);
+            if (_Data.Target == m_Compartment)
+            {
+                RemoveCompartments(_Data.Caller);
+            }
+            else if (_Data.Caller == m_Compartment)
+            {
+                RemoveCompartments(_Data.Target);
+            }
+            else
+            {
+                if(_Data.Caller.getChildCompartments().Contains(_Data.Target))
+                {
+                    RemoveCompartments(_Data.Target);
+                }
+                else
+                {
+                    RemoveCompartments(_Data.Caller);
+                }
+            }
+
         }
     }
 
@@ -78,6 +110,9 @@ public class StationControllerV2 : MonoBehaviour
 
         for(int sys = 0; sys < _compartment.GetSubSystems().Count; sys++)
         { m_subSystems.Add(_compartment.GetSubSystems()[sys]); }
+
+        for (int port = 0; port < _compartment.GetDockingPorts().Count; port++)
+        { m_dockingPorts.Add(_compartment.GetDockingPorts()[port]); }
 
         if(_compartment.getChildCompartments().Count > 0)
         {
@@ -101,6 +136,9 @@ public class StationControllerV2 : MonoBehaviour
         //remove any subsystems attached to the compartment from the station list
         for(int sys = 0; sys < _compartment.GetSubSystems().Count; sys++)
         { m_subSystems.Remove(_compartment.GetSubSystems()[sys]);}
+
+        for (int port = 0; port < _compartment.GetDockingPorts().Count; port++)
+        { m_dockingPorts.Remove(_compartment.GetDockingPorts()[port]); }
 
         //check if there are any compartments left to cycle through
         if (_compartment.getChildCompartments().Count > 0)

@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class RCS : SubSystemBase
 {
+    public delegate void Thrust(ThrusterFiring data);
+    public static event Thrust thrust;
+
     InputSystem_Actions input;
     bool active = false;
 
@@ -13,6 +17,11 @@ public class RCS : SubSystemBase
     Vector3 moveVector = Vector3.zero;
     Vector3 rotation = Vector3.zero;
     Vector2 mouseMove = Vector2.zero;
+
+    bool stabilise = false;
+
+    Vector3 prevMoveVector = Vector3.zero;
+    Vector3 prevRotation = Vector3.zero;
 
     public float xSensitivity = 5f;
     public float ySensitivity = 5f;
@@ -27,10 +36,13 @@ public class RCS : SubSystemBase
 
     Rigidbody body;
 
+    ThrusterFiring data;
+
     private void Awake()
     {
         input = new InputSystem_Actions();
         body = GetComponent<Rigidbody>();
+        data = new ThrusterFiring();
         relativeMovement = transform;
     }
 
@@ -38,8 +50,31 @@ public class RCS : SubSystemBase
     {
         if (active)
         {
-            body.AddForce(relativeMovement.TransformDirection(moveVector) * thrusterForce * Time.deltaTime);
-            body.AddTorque(relativeMovement.TransformVector(rotation) * rotationThrusterForce * Time.deltaTime);
+            Vector3 movement = relativeMovement.TransformDirection(moveVector);
+            Vector3 rot = relativeMovement.TransformVector(rotation);
+
+            //fireThrusters(movement, rot);
+
+            body.AddForce(movement * thrusterForce * Time.deltaTime);
+            body.AddTorque(rot * rotationThrusterForce * Time.deltaTime);
+
+            if(moveVector != prevMoveVector || rotation != prevRotation)
+            {
+                rot = rot.normalized;
+                //Debug.Log("Fire Thrusters");
+                //Debug.Log(movement);
+                fireThrusters(transform.InverseTransformDirection(movement), transform.InverseTransformVector(rot));
+            }
+
+            prevMoveVector = moveVector;
+            prevRotation = rotation;
+
+            if(moveVector == Vector3.zero && rotation == Vector3.zero && body.angularVelocity.magnitude > 0 && stabilise)
+            {
+                
+                rot = transform.TransformVector(-body.angularVelocity);
+                fireThrusters(movement, rot);
+            }
         }
     }
 
@@ -75,6 +110,17 @@ public class RCS : SubSystemBase
         input.Modules.Stabilise.performed -= onShift;
         input.Modules.Stabilise.canceled -= onShiftCanceled;
     }
+
+    void fireThrusters(Vector3 _movement, Vector3 _rotation)
+    {
+        data.RCSCaller  = this;
+        data.rotation = _rotation;
+        data.movement = _movement;
+
+        thrust(data);
+    }
+
+    
 
     public void activate()
     { 
@@ -130,11 +176,13 @@ public class RCS : SubSystemBase
     void onShift(InputAction.CallbackContext _value)
     {
         body.angularDrag = 0.95f;
+        stabilise = true;
     }
 
     void onShiftCanceled(InputAction.CallbackContext _value)
     {
         body.angularDrag = 0.05f;
+        stabilise = false;
     }
 
     void onVerticalMovementPerformed(InputAction.CallbackContext _value)

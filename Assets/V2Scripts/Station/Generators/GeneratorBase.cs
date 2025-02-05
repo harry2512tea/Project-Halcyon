@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class GeneratorBase : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    protected bool active;
+    protected float PowerConsumption;
+    protected float PowerProduction;
+    protected float AirProduction;
 }

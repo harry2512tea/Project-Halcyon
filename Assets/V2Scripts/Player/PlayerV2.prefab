@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: 2785730380346378796}
   - component: {fileID: 6939399644171803340}
   - component: {fileID: 2216704737031046768}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerV2
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -200,6 +200,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 4901054229726803625}
+  range: 0
+  select:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &6351291726149233966
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +215,7 @@ GameObject:
   - component: {fileID: 3411888211013372445}
   - component: {fileID: 4901054229726803625}
   - component: {fileID: 559915191357984353}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}

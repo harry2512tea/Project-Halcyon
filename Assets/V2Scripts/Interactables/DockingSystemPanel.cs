@@ -17,7 +17,7 @@ public class DockingSystemPanel : InteractableBase
 
     public override void Interact(GameObject caller)
     {
-        Debug.Log("Docking Panel");
+        //Debug.Log("Docking Panel");
         if (controller.canControl())
         {
             seatingData data = new seatingData();

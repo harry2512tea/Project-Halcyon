@@ -20,7 +20,9 @@ public class CompartmentControllerV2 : MonoBehaviour
     public delegate void Standing(seatingData data);
     public static event Standing OnCancelControlling;
 
-    StationControllerV2 thisController, mainController;
+    StationControllerV2 thisController;
+
+    public StationControllerV2 mainController;
 
     //list of generators on this module e.g. solar panel, reactor, air generator
     [SerializeField]
@@ -53,6 +55,7 @@ public class CompartmentControllerV2 : MonoBehaviour
     //Resources Stored
     float nitrogenFuel, airInTank;
     //Max resources
+    [SerializeField]
     float maxNitrogenFuel, maxAirInTank;
 
     bool centralNode = true;
@@ -85,7 +88,7 @@ public class CompartmentControllerV2 : MonoBehaviour
 
         Transform ports = transform.Find("DockingPorts");
 
-        for(int i = 0; i < ports.childCount; i++)
+        for (int i = 0; i < ports.childCount; i++)
         {
             dockingPorts.Add(ports.GetChild(i).GetComponent<DockingPortV2>());
         }
@@ -93,7 +96,7 @@ public class CompartmentControllerV2 : MonoBehaviour
 
     private void Update()
     {
-        if(controlled)
+        if (controlled)
         {
             docking();
         }
@@ -104,11 +107,15 @@ public class CompartmentControllerV2 : MonoBehaviour
         input.Enable();
 
         CompartmentControllerV2.OnCompartmentDock += OnDockedTo;
-        CompartmentControllerV2.OnCompartmentUndock += OnUndockedFrom;
+        CompartmentControllerV2.OnDock += dockEvent;
+        //CompartmentControllerV2.OnCompartmentUndock += OnUndockedFrom;
 
         //InteractionControllerV2.OnSeated += OnSeated;
         //InteractionControllerV2.OnStanding += OnStanding;
         DockingSystemPanel.OnSeated += OnSeated;
+
+        DockingPortV2.unDock += UnDock;
+
         input.Modules.Cancel.performed += OnCancelDockingPerformed;
         input.Modules.TogglePort.performed += CyclePort;
         input.Modules.ToggleTarget.performed += CycleTarget;
@@ -119,9 +126,13 @@ public class CompartmentControllerV2 : MonoBehaviour
         input.Disable();
 
         CompartmentControllerV2.OnCompartmentDock -= OnDockedTo;
-        CompartmentControllerV2.OnCompartmentUndock -= OnUndockedFrom;
+        CompartmentControllerV2.OnDock -= dockEvent;
+        //CompartmentControllerV2.OnCompartmentUndock -= OnUndockedFrom;
 
         DockingSystemPanel.OnSeated -= OnSeated;
+
+        DockingPortV2.unDock -= UnDock;
+
         input.Modules.Cancel.performed -= OnCancelDockingPerformed;
         input.Modules.TogglePort.performed -= CyclePort;
         input.Modules.ToggleTarget.performed -= CycleTarget;
@@ -132,16 +143,26 @@ public class CompartmentControllerV2 : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("triggerEnter");
-        switch(other.tag)
+        //Debug.Log("triggerEnter");
+        switch (other.tag)
         {
             case "Module":
-                CompartmentControllerV2 temp = other.GetComponent<CompartmentControllerV2>();
-                for(int I = 0; I < dockingPorts.Count; I++)
+                //CompartmentControllerV2 temp = other.GetComponent<CompartmentControllerV2>();
+                //for(int I = 0; I < dockingPorts.Count; I++)
+                //{
+                //    if (!dockingPorts[I].docked)
+                //    {
+                //        temp.AddTargetPort(dockingPorts[I]);
+                //    }
+                //}
+
+                if (controlled)
                 {
-                    if (!dockingPorts[I].docked)
+                    CompartmentControllerV2 temp = other.GetComponent<CompartmentControllerV2>();
+                    for (int I = 0; I < temp.GetDockingPorts().Count; I++)
                     {
-                        temp.AddTargetPort(dockingPorts[I]);
+                        if (!temp.GetDockingPorts()[I].docked)
+                        { targetPorts.Add(temp.GetDockingPorts()[I]); }
                     }
                 }
                 break;
@@ -156,11 +177,13 @@ public class CompartmentControllerV2 : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        Debug.Log("Trigger Stay");
-        switch(other.tag)
+        //Debug.Log("Trigger Stay");
+        //Debug.Log(other.name);
+
+        switch (other.tag)
         {
             case "DockingPort":
-                if(canDock && other.gameObject == targetPorts[Targetport].gameObject)
+                if (canDock && other.gameObject == targetPorts[Targetport].gameObject)
                 {
                     Dock();
                 }
@@ -170,7 +193,7 @@ public class CompartmentControllerV2 : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.tag == "Module")
+        if (other.tag == "Module")
         {
             CompartmentControllerV2 temp = other.GetComponent<CompartmentControllerV2>();
             for (int I = 0; I < dockingPorts.Count; I++)
@@ -185,8 +208,8 @@ public class CompartmentControllerV2 : MonoBehaviour
     }
 
     void OnSeated(seatingData data)
-    { 
-        if(data.Target == gameObject)
+    {
+        if (data.Target == gameObject)
         {
             controlled = true;
             controlledBy = data.Caller;
@@ -208,7 +231,7 @@ public class CompartmentControllerV2 : MonoBehaviour
 
     void OnStanding(seatingData data)
     {
-        if(controlled && data.Caller == controlledBy)
+        if (controlled && data.Caller == controlledBy)
         {
             controlled = false;
             controlledBy = null;
@@ -231,21 +254,21 @@ public class CompartmentControllerV2 : MonoBehaviour
         if (_data.Target == this)
         {
             childCompartments.Add(_data.Caller);
+            docked = true;
         }
     }
 
-    //called when a child compartment undocks from this one
-    void OnUndockedFrom(CompartmentDockingData _data)
-    { 
+    void dockEvent(DockingData _data)
+    {
         if(_data.Target == this)
         {
-            childCompartments.Remove(_data.Caller);
+            childCompartments.Add(_data.Caller);
         }
     }
 
     void Dock()
     {
-        Debug.Log("Dock");
+        //Debug.Log("Dock");
         DockingData data = new DockingData();
         data.Caller = this;
         data.CallerPort = dockingPorts[Currentport];
@@ -254,9 +277,9 @@ public class CompartmentControllerV2 : MonoBehaviour
         data.StationTarget = data.Target.getStationController();
 
 
-        body.isKinematic = false;
+        body.isKinematic = true;
         transform.parent = data.Target.transform;
-        body.velocity = Vector3.zero;
+        //body.velocity = Vector3.zero;
         transform.rotation *= Quaternion.FromToRotation(data.CallerPort.transform.up, data.TargetPort.transform.up);
         transform.rotation *= Quaternion.FromToRotation(data.CallerPort.transform.forward, -data.TargetPort.transform.forward);
 
@@ -269,18 +292,78 @@ public class CompartmentControllerV2 : MonoBehaviour
         transform.localPosition = offset;
 
         centralNode = false;
-        GetComponent<StationControllerV2>().enabled = false;
+        thisController.enabled = false;
         OnDock(data);
 
+        portDetector.enabled = false;
+
+        docked = true;
+        canDock = false;
         
     }
 
-    void UnDock()
+    void UnDock(DockingData _data)
     {
-        DockingData data = new DockingData();
-        centralNode = true;
-        GetComponent<StationControllerV2>().enabled = true;
-        OnUndock(data);
+        if (_data.Target == this)
+        {
+            undockTarget(_data);
+        }
+        else if(_data.Caller == this)
+        {
+            undockCaller(_data);
+        }
+
+        if (childCompartments.Count == 0)
+        {
+            docked = false;
+        }
+    }
+
+    void undockTarget(DockingData _data)
+    {
+        if (centralNode)
+        {
+            childCompartments.Remove(_data.Caller);
+        }
+        else
+        {
+            if (childCompartments.Contains(_data.Caller))
+            {
+                childCompartments.Remove(_data.Caller);
+            }
+            else
+            {
+                thisController.enabled = true;
+                mainController = thisController;
+                transform.parent = null;
+                body.isKinematic = false;
+                Vector3 direction = transform.position - _data.Caller.transform.position;
+            }
+        }
+
+    }
+
+    void undockCaller(DockingData _data)
+    {
+        if (centralNode)
+        {
+            childCompartments.Remove(_data.Target);
+        }
+        else
+        {
+            if (childCompartments.Contains(_data.Target))
+            {
+                childCompartments.Remove(_data.Target);
+
+            }
+            else
+            {
+                thisController.enabled = true;
+                mainController = thisController;
+                transform.parent = null;
+                body.isKinematic = false;
+            }
+        }
     }
 
     public bool canControl()
@@ -291,7 +374,7 @@ public class CompartmentControllerV2 : MonoBehaviour
     void docking()
     { 
         
-        if(targetPorts.Count > 0)
+        if(targetPorts.Count > 0 && !docked)
         {
             Transform current = dockingPorts[Currentport].transform;
             Transform target = targetPorts[Targetport].transform;
@@ -315,20 +398,23 @@ public class CompartmentControllerV2 : MonoBehaviour
 
     void OnCancelDockingPerformed(InputAction.CallbackContext _value)
     {
-        Debug.Log("cancelling");
-        controlled = false;
+        if (controlled)
+        {
+            Debug.Log("cancelling");
+            controlled = false;
 
-        seatingData data = new seatingData();
-        data.Target = controlledBy.gameObject;
-        
+            seatingData data = new seatingData();
+            data.Target = controlledBy.gameObject;
 
-        OnCancelControlling(data);
 
-        controlled = false;
-        controlledBy = null;
-        rcs.deactivate();
-        rcs.UpdateReferenceFrame(transform);
-        portDetector.enabled = false;
+            OnCancelControlling(data);
+
+            controlled = false;
+            controlledBy = null;
+            rcs.deactivate();
+            rcs.UpdateReferenceFrame(transform);
+            portDetector.enabled = false;
+        }
     }
 
     public void AddTargetPort(DockingPortV2 port)
@@ -348,7 +434,6 @@ public class CompartmentControllerV2 : MonoBehaviour
         //Debug.Log("Current Target: " + Targetport);
         if (Targetport + 1 < targetPorts.Count)
         {
-            
             Targetport++;
         }
         else
@@ -363,11 +448,12 @@ public class CompartmentControllerV2 : MonoBehaviour
         if (Currentport + 1 < dockingPorts.Count)
         {
             Currentport++;
-
+            rcs.UpdateReferenceFrame(dockingPorts[Currentport].transform);
         }
         else
         {
             Currentport = 0;
+            rcs.UpdateReferenceFrame(dockingPorts[Currentport].transform);
         }
 
         dockingCam.transform.parent = dockingPorts[Currentport].transform;
@@ -376,7 +462,6 @@ public class CompartmentControllerV2 : MonoBehaviour
 
         //Debug.Log("Current Port: " + Currentport);
     }
-
     void UpdateAvailablePorts()
     { 
         availablePorts.Clear();

@@ -41,3 +41,11 @@ public class interactionData
 {
     public InteractionControllerV2 Caller;
 }
+
+public class ThrusterFiring
+{
+    public RCS RCSCaller;
+    public StationControllerV2 StationCaller;
+    public Vector3 movement;
+    public Vector3 rotation;
+}
